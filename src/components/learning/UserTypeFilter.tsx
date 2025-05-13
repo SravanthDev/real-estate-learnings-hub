@@ -1,7 +1,6 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface UserTypeFilterProps {
   selectedUserType: string;
@@ -23,36 +22,38 @@ const UserTypeFilter = ({ selectedUserType, setSelectedUserType }: UserTypeFilte
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="mb-6"
+      className="overflow-x-auto pb-2"
     >
-      <ToggleGroup 
-        type="single" 
-        value={selectedUserType}
-        className="flex flex-wrap justify-center gap-2 w-full"
-      >
+      <div className="flex flex-nowrap md:flex-wrap md:justify-center gap-3 min-w-max md:min-w-0">
         {userTypes.map((type, index) => (
-          <motion.div
+          <motion.button
             key={type.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
+            onClick={() => setSelectedUserType(type.id)}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3, delay: index * 0.05 }}
-            className="w-auto"
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.95 }}
+            className={cn(
+              "relative px-6 py-3 rounded-lg font-medium text-sm md:text-base transition-all duration-300 overflow-hidden",
+              selectedUserType === type.id 
+                ? "text-white" 
+                : "bg-white/80 shadow-sm border border-gray-100 text-gray-700 hover:text-real-600 hover:border-real-200"
+            )}
           >
-            <ToggleGroupItem
-              value={type.id}
-              onClick={() => setSelectedUserType(type.id)}
-              className={cn(
-                "px-4 py-2 rounded-full transition-all duration-300 border-2 font-medium text-sm",
-                selectedUserType === type.id 
-                  ? "bg-gradient-to-r from-real-600 to-real-500 text-white border-transparent shadow-md" 
-                  : "bg-white border-gray-200 text-gray-700 hover:border-real-300 hover:text-real-600"
-              )}
-            >
-              {type.name}
-            </ToggleGroupItem>
-          </motion.div>
+            {selectedUserType === type.id && (
+              <motion.div 
+                layoutId="activeUserTypeBackground"
+                className="absolute inset-0 bg-gradient-to-r from-real-600 to-real-500 shadow-md"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.2 }}
+              />
+            )}
+            <span className="relative z-10">{type.name}</span>
+          </motion.button>
         ))}
-      </ToggleGroup>
+      </div>
     </motion.div>
   );
 };
