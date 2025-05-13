@@ -1,4 +1,5 @@
 
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface UserTypeFilterProps {
@@ -19,9 +20,11 @@ const UserTypeFilter = ({ selectedUserType, setSelectedUserType }: UserTypeFilte
   return (
     <div className="flex flex-wrap gap-2">
       {userTypes.map((type) => (
-        <button
+        <motion.button
           key={type.id}
           onClick={() => setSelectedUserType(type.id)}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           className={cn(
             "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
             selectedUserType === type.id
@@ -30,7 +33,7 @@ const UserTypeFilter = ({ selectedUserType, setSelectedUserType }: UserTypeFilte
           )}
         >
           {type.name}
-        </button>
+        </motion.button>
       ))}
     </div>
   );
