@@ -4,7 +4,6 @@ import SearchBar from "./SearchBar";
 import CategorySidebar from "./CategorySidebar";
 import UserTypeFilter from "./UserTypeFilter";
 import QuestionCard from "./QuestionCard";
-import FeaturedQuestions from "./FeaturedQuestions";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { learningData, QuestionData } from "@/data/learningData";
@@ -12,6 +11,9 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Menu } from "lucide-react";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Card } from "@/components/ui/card";
 
 const LearningSection: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("beginners");
@@ -64,12 +66,6 @@ const LearningSection: React.FC = () => {
     setSearchQuery(query);
   };
 
-  const featuredQuestions = React.useMemo(() => {
-    return learningData
-      .filter(q => q.featured)
-      .slice(0, 3);
-  }, []);
-
   const renderSidebar = () => (
     <CategorySidebar 
       selectedCategory={selectedCategory} 
@@ -77,26 +73,41 @@ const LearningSection: React.FC = () => {
     />
   );
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 animate-fade-in">
-      <h1 className="text-3xl md:text-4xl font-bold text-center mb-2 text-gray-800">
-        Real Estate Learning Center
-      </h1>
-      <p className="text-center text-gray-600 mb-8 max-w-3xl mx-auto">
-        Explore our comprehensive guides and expert answers to all your real estate questions
-      </p>
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="text-center mb-8"
+      >
+        <h1 className="text-3xl md:text-4xl font-bold mb-2 text-gray-800 tracking-tight">
+          Real Estate Learning Center
+        </h1>
+        <p className="text-center text-gray-600 max-w-3xl mx-auto">
+          Explore our comprehensive guides and expert answers to all your real estate questions
+        </p>
+      </motion.div>
       
       <div className="mb-8">
         <SearchBar onSearch={handleSearch} />
       </div>
 
-      {featuredQuestions && featuredQuestions.length > 0 && !searchQuery && (
-        <FeaturedQuestions 
-          questions={featuredQuestions} 
-          onQuestionClick={handleQuestionClick} 
-        />
-      )}
-      
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Mobile Sidebar */}
         {isMobile ? (
@@ -117,46 +128,100 @@ const LearningSection: React.FC = () => {
             </Drawer>
           </div>
         ) : (
-          <div className="lg:col-span-1">
+          <motion.div 
+            className="lg:col-span-1"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+          >
             {renderSidebar()}
-          </div>
+          </motion.div>
         )}
         
         <div className={cn("lg:col-span-3", isMobile ? "col-span-1" : "")}>
-          <div className="bg-white rounded-lg shadow-md p-6 animate-fade-in">
-            <div className="mb-6">
+          <Card className="bg-white rounded-lg shadow-sm p-6">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="mb-6"
+            >
               <h2 className="text-xl font-semibold mb-4 text-gray-800">Filter by User Type</h2>
               <UserTypeFilter 
                 selectedUserType={selectedUserType} 
                 setSelectedUserType={setSelectedUserType} 
               />
-            </div>
+            </motion.div>
             
-            <div>
-              <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center justify-between">
-                <span>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-800">
                   {filteredQuestions.length} {filteredQuestions.length === 1 ? 'Question' : 'Questions'} Found
-                </span>
-              </h2>
+                </h2>
+              </div>
               
               {filteredQuestions.length > 0 ? (
-                <div className="grid grid-cols-1 gap-4">
-                  {filteredQuestions.map((question) => (
-                    <QuestionCard
-                      key={question.id}
-                      question={question}
-                      isExpanded={expandedQuestion === question.id}
-                      onClick={() => handleQuestionClick(question)}
-                    />
-                  ))}
-                </div>
+                <motion.div 
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className="space-y-4"
+                >
+                  {isMobile ? (
+                    filteredQuestions.map((question) => (
+                      <motion.div key={question.id} variants={itemVariants}>
+                        <QuestionCard
+                          question={question}
+                          isExpanded={expandedQuestion === question.id}
+                          onClick={() => handleQuestionClick(question)}
+                        />
+                      </motion.div>
+                    ))
+                  ) : (
+                    <Accordion type="single" collapsible className="w-full">
+                      {filteredQuestions.map((question) => (
+                        <motion.div key={question.id} variants={itemVariants}>
+                          <AccordionItem value={question.id} className="border-b border-gray-100">
+                            <AccordionTrigger className="hover:no-underline py-4">
+                              <div className="flex flex-col items-start text-left">
+                                <div className="flex flex-wrap gap-2 mb-2">
+                                  <span className="bg-real-100 text-real-700 text-xs font-medium px-2 py-1 rounded-full">
+                                    {question.category.charAt(0).toUpperCase() + question.category.slice(1)}
+                                  </span>
+                                  <span className="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full">
+                                    {question.userType.charAt(0).toUpperCase() + question.userType.slice(1)}
+                                  </span>
+                                </div>
+                                <h3 className="font-medium text-gray-800 text-lg">{question.question}</h3>
+                              </div>
+                            </AccordionTrigger>
+                            <AccordionContent className="text-gray-700 leading-relaxed pt-2 pb-4 px-1">
+                              {question.answer}
+                            </AccordionContent>
+                          </AccordionItem>
+                        </motion.div>
+                      ))}
+                    </Accordion>
+                  )}
+                </motion.div>
               ) : (
-                <div className="text-center py-8 text-gray-500">
-                  No questions found matching your criteria. Try adjusting your filters.
+                <div className="text-center py-12 text-gray-500">
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <p className="text-lg mb-4">No questions found matching your criteria.</p>
+                    <p>Try adjusting your filters or search query.</p>
+                  </motion.div>
                 </div>
               )}
-            </div>
-          </div>
+            </motion.div>
+          </Card>
         </div>
       </div>
 
