@@ -5,6 +5,7 @@ export interface QuestionData {
   answer: string;
   category: string;
   userType: string;
+  featured?: boolean; // Added missing featured property
 }
 
 export const learningData: QuestionData[] = [
@@ -14,7 +15,8 @@ export const learningData: QuestionData[] = [
     question: "What documents should I verify before buying a property?",
     answer: "Before purchasing a property, you should verify the title deed, encumbrance certificate, approved building plan, completion certificate, and property tax receipts. These documents ensure the property has a clear legal title and complies with local regulations.",
     category: "beginners",
-    userType: "buyers"
+    userType: "buyers",
+    featured: true // Mark this question as featured
   },
   {
     id: "b2",
@@ -30,7 +32,8 @@ export const learningData: QuestionData[] = [
     question: "When is the best time to sell my property?",
     answer: "The best time to sell depends on market conditions, property location, and personal circumstances. Generally, spring and early fall see more buyer activity. Monitor local market trends, interest rates, and economic conditions to identify favorable selling periods.",
     category: "beginners",
-    userType: "sellers"
+    userType: "sellers",
+    featured: true // Mark this question as featured
   },
   
   // Insights - NRIs
@@ -39,7 +42,8 @@ export const learningData: QuestionData[] = [
     question: "What are the current trends in the Indian real estate market for NRI investors?",
     answer: "Current trends include growing interest in luxury housing, sustainable properties, and commercial real estate. Major cities are seeing stable appreciation, while tier-2 cities offer higher potential returns. The RERA Act has improved transparency, making the market more attractive for NRI investors.",
     category: "insights",
-    userType: "nris"
+    userType: "nris",
+    featured: true // Mark this question as featured
   },
   
   // Investment - HNIs
